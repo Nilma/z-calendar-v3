@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin (Demo) - Zealand Academy Events</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <h1>Admin Panel (Demo)</h1>
+    <p class="tagline">Static prototype (no persistence)</p>
+    <nav><a href="index.html">Back to site</a></nav>
+  </header>
+  <main class="admin">
+    <form id="eventForm" class="card">
+      <h2>Create / Preview Event</h2>
+      <div class="grid">
+        <label>Title <input required name="title"></label>
+        <label>Start <input required type="datetime-local" name="start"></label>
+        <label>End <input required type="datetime-local" name="end"></label>
+        <label>Category <input name="category"></label>
+        <label>Location <input name="location"></label>
+        <label>Speaker <input name="speaker"></label>
+        <label>Tags (comma) <input name="tags"></label>
+      </div>
+      <label>Description
+        <textarea name="description" rows="4"></textarea>
+      </label>
+      <button type="submit">Generate JSON Snippet</button>
+      <pre id="jsonPreview" class="code"></pre>
+    </form>
+    <section class="card">
+      <h2>Migrating to Real Backend</h2>
+      <ol>
+        <li>Implement API (Next.js / Express) at /api/events.</li>
+        <li>Replace fetch events.json with API call (pagination + filters).</li>
+        <li>Add auth (e.g., Auth.js / Clerk / Keycloak) and secure admin route.</li>
+        <li>Store data in SQLite/Postgres via Prisma.</li>
+      </ol>
+    </section>
+  </main>
+  <script>
+    const form = document.getElementById('eventForm');
+    const preview = document.getElementById('jsonPreview');
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(form).entries());
+      const id = data.start.slice(0,10) + '-' + data.title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+      const tags = (data.tags || '').split(',').map(t=>t.trim()).filter(Boolean);
+      const event = {
+        id,
+        title: data.title,
+        start: new Date(data.start).toISOString(),
+        end: new Date(data.end).toISOString(),
+        category: data.category || 'General',
+        location: data.location || '',
+        speaker: data.speaker || '',
+        description: data.description || '',
+        tags
+      };
+      preview.textContent = JSON.stringify(event, null, 2);
+    });
+  </script>
+</body>
+</html>

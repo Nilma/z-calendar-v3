@@ -1,0 +1,46 @@
+[
+  {
+    "id": "2025-09-05-intro-ai",
+    "title": "Introduction to Applied AI",
+    "start": "2025-09-05T09:00:00+02:00",
+    "end": "2025-09-05T11:00:00+02:00",
+    "category": "Workshop",
+    "location": "Room A201",
+    "speaker": "Dr. Anna Jensen",
+    "description": "A practical primer on applied AI techniques used in modern products.",
+    "tags": ["AI", "Foundations"]
+  },
+  {
+    "id": "2025-09-12-ds-lab",
+    "title": "Data Science Lab: Cleaning Pipelines",
+    "start": "2025-09-12T13:00:00+02:00",
+    "end": "2025-09-12T15:30:00+02:00",
+    "category": "Lab",
+    "location": "Lab C3",
+    "speaker": "Mikkel Sørensen",
+    "description": "Hands-on work building robust data cleaning pipelines with Python.",
+    "tags": ["Data", "Python"]
+  },
+  {
+    "id": "2025-09-18-guest-cyber",
+    "title": "Guest Lecture: Modern Cybersecurity",
+    "start": "2025-09-18T10:00:00+02:00",
+    "end": "2025-09-18T11:30:00+02:00",
+    "category": "Guest Lecture",
+    "location": "Auditorium 1",
+    "speaker": "Lars Holm",
+    "description": "Threat landscape overview and defense in depth strategies.",
+    "tags": ["Security", "Cyber"]
+  },
+  {
+    "id": "2025-09-25-hackathon",
+    "title": "Mini Hackathon",
+    "start": "2025-09-25T09:00:00+02:00",
+    "end": "2025-09-25T17:00:00+02:00",
+    "category": "Hackathon",
+    "location": "Innovation Hub",
+    "speaker": "Facilitators Team",
+    "description": "Collaborative prototyping day focusing on sustainability tech.",
+    "tags": ["Collaboration", "Sustainability"]
+  }
+]

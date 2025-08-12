@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <title>Zealand Academy Events</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="Event calendar for Zealand Academy" />
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+  <!-- Base styles -->
+  <link rel="stylesheet" href="assets/styles.css" />
+  <!-- Zealand brand theme overrides -->
+  <link rel="stylesheet" href="assets/zealand-theme.css" />
+</head>
+<body class="brand-zealand">
+  <header class="site-header zealand-hero">
+    <div class="branding">
+      <h1 class="brand-lockup">
+        <span class="brand-word-main">Zealand</span>
+        <span class="brand-word-sub">Academy Events</span>
+      </h1>
+      <p class="tagline">Learn. Engage. Grow.</p>
+    </div>
+    <nav class="main-nav" aria-label="Primary">
+      <button id="toggleTheme" aria-label="Toggle dark mode">🌓</button>
+      <button class="view-btn" data-view="list" aria-pressed="true">List</button>
+      <button class="view-btn" data-view="calendar" aria-pressed="false">Calendar</button>
+      <button class="view-btn" data-view="timeline" aria-pressed="false">Timeline</button>
+    </nav>
+  </header>
+
+  <div class="accent-bar" aria-hidden="true"></div>
+
+  <section class="filters" aria-label="Event filters">
+    <div class="filter-group">
+      <label>
+        <span class="label">Search</span>
+        <input type="search" id="searchInput" placeholder="Search title, speaker, topic..." />
+      </label>
+    </div>
+    <div class="filter-group">
+      <label>
+        <span class="label">Category</span>
+        <select id="categoryFilter">
+          <option value="">All</option>
+        </select>
+      </label>
+    </div>
+    <div class="filter-group">
+      <label>
+        <span class="label">From</span>
+        <input type="date" id="fromDate" />
+      </label>
+      <label>
+        <span class="label">To</span>
+        <input type="date" id="toDate" />
+      </label>
+    </div>
+    <div class="filter-group">
+      <button id="resetFilters" class="secondary" type="button">Reset</button>
+      <button id="downloadIcs" class="secondary" type="button">Download .ics</button>
+    </div>
+  </section>
+
+  <main id="appRoot">
+    <!-- List View -->
+    <div id="listView" class="view active" aria-label="List of events">
+      <ul id="eventList" class="event-list" aria-live="polite"></ul>
+    </div>
+
+    <!-- Calendar View -->
+    <div id="calendarView" class="view" aria-label="Monthly calendar">
+      <div class="calendar-header">
+        <button id="prevMonth" aria-label="Previous Month">‹</button>
+        <h2 id="calendarLabel"></h2>
+        <button id="nextMonth" aria-label="Next Month">›</button>
+      </div>
+      <div class="calendar-grid" id="calendarGrid" role="grid" aria-readonly="true"></div>
+      <div id="calendarEmptyNote" class="calendar-empty-note" hidden>No events match the filters this month.</div>
+      <div id="dayDetail" class="day-detail" hidden>
+        <button id="closeDayDetail" class="close" aria-label="Close day details">&times;</button>
+        <h3 id="dayDetailDate"></h3>
+        <ul id="dayDetailEvents"></ul>
+      </div>
+    </div>
+
+    <!-- Timeline View -->
+    <div id="timelineView" class="view" aria-label="Timeline view">
+      <div id="timelineContainer" class="timeline"></div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <p>&copy; <span id="year"></span> Zealand Academy. All rights reserved.</p>
+    <p><a href="admin.html">Admin (demo)</a></p>
+  </footer>
+
+  <script type="module">
+    import { fetchEvents, applyFilters, buildCategoryOptions, onFilterChange } from './assets/utils.js';
+    import { renderList, renderCalendar, renderTimeline, exportIcs } from './assets/calendar.js';
+    import { buildIcsFile } from './assets/ical.js';
+
+    const state = {
+      rawEvents: [],
+      filtered: [],
+      view: 'list',
+      calendarFocus: new Date()
+    };
+
+    const DOM = {
+      list: document.getElementById('eventList'),
+      search: document.getElementById('searchInput'),
+      category: document.getElementById('categoryFilter'),
+      from: document.getElementById('fromDate'),
+      to: document.getElementById('toDate'),
+      reset: document.getElementById('resetFilters'),
+      download: document.getElementById('downloadIcs'),
+      views: document.querySelectorAll('.view-btn'),
+      calendarGrid: document.getElementById('calendarGrid'),
+      calendarLabel: document.getElementById('calendarLabel'),
+      prevMonth: document.getElementById('prevMonth'),
+      nextMonth: document.getElementById('nextMonth'),
+      dayDetail: document.getElementById('dayDetail'),
+      dayDetailDate: document.getElementById('dayDetailDate'),
+      dayDetailEvents: document.getElementById('dayDetailEvents'),
+      closeDayDetail: document.getElementById('closeDayDetail'),
+      timeline: document.getElementById('timelineContainer'),
+      calendarEmptyNote: document.getElementById('calendarEmptyNote')
+    };
+
+    function renderAll() {
+      renderList(DOM.list, state.filtered);
+      renderCalendar(state, DOM);
+      renderTimeline(DOM.timeline, state.filtered);
+    }
+
+    function updateFilters() {
+      state.filtered = applyFilters(state.rawEvents, {
+        q: DOM.search.value.trim(),
+        category: DOM.category.value,
+        from: DOM.from.value,
+        to: DOM.to.value
+      });
+      renderAll();
+    }
+
+    async function init() {
+      try {
+        state.rawEvents = await fetchEvents('events.json');
+      } catch (e) {
+        console.error('Failed to load events.json. Ensure you are using a local server (not file://).', e);
+        state.rawEvents = [];
+      }
+      buildCategoryOptions(DOM.category, state.rawEvents);
+      updateFilters();
+      onFilterChange([DOM.search, DOM.category, DOM.from, DOM.to], updateFilters);
+
+      DOM.reset.addEventListener('click', () => {
+        DOM.search.value = '';
+        DOM.category.value = '';
+        DOM.from.value = '';
+        DOM.to.value = '';
+        updateFilters();
+      });
+
+      DOM.download.addEventListener('click', () => {
+        const ics = buildIcsFile(state.filtered);
+        exportIcs(ics, 'zealand-academy-events.ics');
+      });
+
+      // View switching
+      DOM.views.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const view = btn.dataset.view;
+          if (view === state.view) return;
+            state.view = view;
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(view + 'View').classList.add('active');
+            DOM.views.forEach(b => b.setAttribute('aria-pressed', b === btn));
+            renderAll();
+        });
+      });
+
+      // Calendar navigation
+      DOM.prevMonth.addEventListener('click', () => {
+        state.calendarFocus = new Date(state.calendarFocus.getFullYear(), state.calendarFocus.getMonth() - 1, 1);
+        renderCalendar(state, DOM);
+      });
+      DOM.nextMonth.addEventListener('click', () => {
+        state.calendarFocus = new Date(state.calendarFocus.getFullYear(), state.calendarFocus.getMonth() + 1, 1);
+        renderCalendar(state, DOM);
+      });
+
+      DOM.closeDayDetail.addEventListener('click', () => {
+        DOM.dayDetail.hidden = true;
+      });
+
+      // Theme toggle
+      const toggleThemeBtn = document.getElementById('toggleTheme');
+      toggleThemeBtn.addEventListener('click', () => {
+        const root = document.documentElement;
+        const current = root.getAttribute('data-theme') || 'light';
+        const next = current === 'light' ? 'dark' : 'light';
+        root.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+      });
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
+
+      document.getElementById('year').textContent = (new Date()).getFullYear();
+    }
+
+    init();
+  </script>
+</body>
+</html>

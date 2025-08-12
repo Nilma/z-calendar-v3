@@ -1,0 +1,174 @@
+/* Zealand Brand Theme Layer (updated) */
+
+:root {
+  /* Replace these with the real brand tokens */
+  --brand: #0A3A6B;
+  --brand-accent: #0072CE;
+  --brand-secondary: #009C78;
+  --brand-warm: #FFB400;
+  --brand-danger: #CC2D2D;
+
+  --brand-neutral-dark: #1C222C;
+  --brand-neutral: #5F6B7A;
+  --brand-neutral-light: #E3E8EE;
+
+  --bg: #ffffff;
+  --bg-alt: #F3F6F9;
+  --bg-accent: #E9F1F9;
+  --fg: #1e2430;
+  --fg-muted: #5b6374;
+  --border: #d5dfe8;
+
+  --font-sans: system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,sans-serif;
+  font-family: var(--font-sans);
+
+  --radius: 8px;
+  --shadow: 0 4px 14px -4px rgba(0, 40, 90, 0.18);
+  --focus: 2px solid rgba(0,114,206,0.55);
+}
+
+[data-theme="dark"] {
+  --bg: #0E141B;
+  --bg-alt: #151C25;
+  --bg-accent: #1F2A35;
+  --fg: #F1F4F7;
+  --fg-muted: #9DABB9;
+  --border: #2E3A46;
+  --shadow: 0 6px 18px -6px rgba(0,0,0,0.55);
+  --focus: 2px solid rgba(0,114,206,0.65);
+}
+
+body.brand-zealand {
+  font-family: var(--font-sans);
+}
+
+.brand-lockup {
+  display: flex;
+  flex-direction: column;
+  font-size: clamp(1.25rem, 1.4rem + 0.8vw, 2.2rem);
+  margin: 0;
+  line-height: 1.05;
+  letter-spacing: -0.5px;
+  font-weight: 600;
+}
+.brand-lockup .brand-word-main { color: #fff; font-weight: 700; }
+.brand-lockup .brand-word-sub {
+  color: #ffffffcc;
+  font-weight: 400;
+  font-size: 0.58em;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-top: .3rem;
+}
+
+.zealand-hero {
+  --hero-grad-start: var(--brand);
+  --hero-grad-end: var(--brand-accent);
+  background: linear-gradient(135deg, var(--hero-grad-start) 0%, var(--hero-grad-end) 100%);
+  position: relative;
+  overflow: hidden;
+}
+.zealand-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(255,255,255,0.15) 0, transparent 60%),
+    radial-gradient(circle at 85% 80%, rgba(255,255,255,0.12) 0, transparent 65%);
+  pointer-events: none;
+}
+
+.accent-bar {
+  height: 6px;
+  background: linear-gradient(90deg,
+    var(--brand) 0%,
+    var(--brand-accent) 45%,
+    var(--brand-secondary) 80%,
+    var(--brand-warm) 100%);
+}
+
+.main-nav button {
+  border-radius: 999px;
+  backdrop-filter: blur(4px);
+}
+.main-nav button[aria-pressed="true"] {
+  background: #fff;
+  color: var(--brand);
+}
+
+.event-card {
+  border-left: 4px solid var(--brand);
+  transition: transform .25s, box-shadow .25s;
+}
+.event-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px -6px rgba(0,40,90,0.28);
+}
+
+.badge {
+  background: var(--bg-accent);
+  color: var(--brand);
+}
+
+/* Category-specific background tints (slug-based) */
+.badge[data-cat="Workshop"]      { background: rgba(0,114,206,0.18); color: var(--brand); }
+.badge[data-cat="Hackathon"]     { background: rgba(255,180,0,0.18); color: #B07000; }
+.badge[data-cat="Guest Lecture"] { background: rgba(0,156,120,0.18); color: #0B7A5D; }
+.badge[data-cat="Lab"]           { background: rgba(160,80,230,0.18); color: #6F29C7; }
+
+.calendar-cell .calendar-event-dot {
+  background: var(--brand-accent);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin: 2px 0;
+}
+/* Color overrides per slug (cat-guest-lecture etc.) */
+.calendar-cell .calendar-event-dot.cat-workshop      { background: var(--brand-accent); }
+.calendar-cell .calendar-event-dot.cat-hackathon     { background: var(--brand-warm); }
+.calendar-cell .calendar-event-dot.cat-guest-lecture { background: var(--brand-secondary); }
+.calendar-cell .calendar-event-dot.cat-lab           { background: #8045E8; }
+
+.calendar-cell.today {
+  outline: 2px solid var(--brand-accent);
+  outline-offset: -2px;
+  background: linear-gradient(135deg, var(--bg-accent), var(--bg));
+}
+
+.timeline-item::before {
+  background: var(--brand-accent);
+}
+
+.filters {
+  background: var(--bg-alt);
+  border-bottom: 2px solid var(--brand);
+}
+
+button.secondary {
+  border-color: var(--brand);
+  color: var(--brand);
+}
+button.secondary:hover {
+  background: var(--brand);
+  color: #fff;
+}
+
+:focus-visible {
+  outline: var(--focus);
+}
+
+/* Empty calendar note */
+.calendar-empty-note {
+  margin-top: 1rem;
+  font-size: .85rem;
+  color: var(--fg-muted);
+}
+
+[data-theme="dark"] .badge {
+  background: rgba(255,255,255,0.08);
+  color: var(--brand-accent);
+}
+
+[data-theme="dark"] .event-card {
+  background: linear-gradient(180deg, #1b2430, #1a2029);
+}
